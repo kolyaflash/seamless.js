@@ -768,7 +768,43 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
         var height = 0;
         var heightTimer = 0;
 
-        // Update the parent iframe container.
+        // Getter for container's actual height.
+        var getCurrentHeight = function () {
+          return $(container).outerHeight(true);
+        };
+
+        /**
+         * Collect data and send update.
+         * @param newHeight: integer
+         */
+        var performUpdate = function (newHeight) {
+
+          // The data to send to the parent.
+          var data = { height: newHeight };
+
+          // Sending the update.
+          sendingUpdate = true;
+
+          // If they wish to update.
+          if (options.onUpdate) {
+            options.onUpdate(data);
+          }
+
+          // Send the update to the parent.
+          connection.send({
+            type: 'seamless_update',
+            data: data,
+            success: function(data) {
+              // Set the height.
+              height = data.height;
+
+              // No longer sending the update.
+              sendingUpdate = false;
+            }
+          });
+        };
+
+        // Check state, call update and defer next update.
         var update = function() {
 
           // Don't process if an error occured with this frame.
@@ -782,39 +818,22 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           }
 
           // Get the new height of the child.
-          var newHeight = $(container).outerHeight(true);
+          var newHeight = getCurrentHeight();
 
           // If the height are different.
           if (!sendingUpdate && (height !== newHeight)) {
-
-            // Sending the update.
-            sendingUpdate = true;
-
-            // The data to send to the parent.
-            var data = { height: newHeight };
-
-            // If they wish to update.
-            if (options.onUpdate) {
-              options.onUpdate(data);
-            }
-
-            // Send the update to the parent.
-            connection.send({
-              type: 'seamless_update',
-              data: data,
-              success: function(data) {
-
-                // Set the height.
-                height = data.height;
-
-                // No longer sending the update.
-                sendingUpdate = false;
-              }
-            });
+            performUpdate(newHeight);
           }
 
           // Update again after 500ms.
           heightTimer = setTimeout(update, options.update);
+        };
+
+        // Attach method to connection for update without waiting for timeout.
+        connection.forceUpdate = function () {
+          // Get the new height of the child.
+          var newHeight = getCurrentHeight();
+          performUpdate(newHeight);
         };
 
         /**
