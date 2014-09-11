@@ -189,7 +189,7 @@
           }
 
           // Update again after 500ms.
-          if (options.update != false) {
+          if (options.update !== false) {
             heightTimer = setTimeout(update, options.update);
           }
         };
