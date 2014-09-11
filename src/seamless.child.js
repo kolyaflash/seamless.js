@@ -195,7 +195,7 @@
         };
 
         // Attach method to connection for update without waiting for timeout.
-        connection.forceUpdate = function () {
+        connection.update = function () {
           // Get the new height of the child.
           var newHeight = getCurrentHeight();
           performUpdate(newHeight);
