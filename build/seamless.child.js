@@ -826,7 +826,9 @@ if (! ("JSON" in window && window.JSON)){JSON={}}(function(){function f(n){retur
           }
 
           // Update again after 500ms.
-          heightTimer = setTimeout(update, options.update);
+          if (options.update !== false) {
+            heightTimer = setTimeout(update, options.update);
+          }
         };
 
         // Attach method to connection for update without waiting for timeout.
