@@ -192,6 +192,13 @@
           heightTimer = setTimeout(update, options.update);
         };
 
+        // Attach method to connection for update without waiting for timeout.
+        connection.forceUpdate = function () {
+          // Get the new height of the child.
+          var newHeight = getCurrentHeight();
+          performUpdate(newHeight);
+        };
+
         /**
          * Send a message that we are ready.
          */
