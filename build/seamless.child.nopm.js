@@ -388,7 +388,9 @@
           }
 
           // Update again after 500ms.
-          heightTimer = setTimeout(update, options.update);
+          if (options.update !== false) {
+            heightTimer = setTimeout(update, options.update);
+          }
         };
 
         // Attach method to connection for update without waiting for timeout.
